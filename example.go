@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -17,9 +16,6 @@ func newApp() *iris.Application {
 	app := iris.New()
 	app.StaticEmbedded("/public", "./public", Asset, AssetNames)
 
-
-
-
 	authConfig := basicauth.Config{
 		Users:   map[string]string{"wtq": "wtq", "www": "www"},
 		Realm:   "Authorization Required", // defaults to "Authorization Required"
@@ -27,14 +23,10 @@ func newApp() *iris.Application {
 	}
 
 	authentication := basicauth.New(authConfig)
-
-
 	app.RegisterView(iris.HTML("./templates", ".html").Binary(Asset, AssetNames))
-
-
 	app.Get("/", func(ctx iris.Context) { ctx.Redirect("/admin") })
-	// to party
 
+	// to party
 	needAuth := app.Party("/admin", authentication)
 	{
 		//http://localhost:8080/admin
@@ -46,19 +38,15 @@ func newApp() *iris.Application {
 		needAuth.Get("/updatetime", func(ctx iris.Context) {
 			c, err := redis.Dial("tcp", "localhost:6379")
 			errCheck(err)
-
 			defer c.Close()
 			val, err := redis.String(c.Do("get", "time"))
 			errCheck(err)
 			ctx.Writef(string(val))
-
 		})
 		needAuth.Get("/data", func(ctx iris.Context) {
 			c, err := redis.Dial("tcp", "localhost:6379")
 			errCheck(err)
-
 			defer c.Close()
-
 			var eq_slice []string
 			var eq_map map[string]map[string]string
 			eq_map = make(map[string]map[string]string)
@@ -87,13 +75,60 @@ func newApp() *iris.Application {
 				}
 				//fmt.Println(index, element)
 			}
-
 			mapB, _ := json.Marshal(eq_map)
-
 			ctx.Writef(string(mapB))
 		})
-	}
 
+		needAuth.Get("/set/{key}/{value}", func(ctx iris.Context) {
+			key, value := ctx.Params().Get("key"), ctx.Params().Get("value")
+			c, err := redis.Dial("tcp", "localhost:6379")
+			errCheck(err)
+			defer c.Close()
+
+			val, err := redis.String(c.Do("SET", key, value))
+			errCheck(err)
+			// test if setted here
+			ctx.Writef("All ok with the key: '%s' and val is: '%s'", key, val)
+		})
+
+		needAuth.Get("/get/{key}", func(ctx iris.Context) {
+			key := ctx.Params().Get("key")
+			c, err := redis.Dial("tcp", "localhost:6379")
+			errCheck(err)
+			defer c.Close()
+
+			val, err := redis.String(c.Do("GET", key))
+			errCheck(err)
+			// test if setted here
+			ctx.Writef("The '%s' on the /get was: %v", key, val)
+
+		})
+
+		needAuth.Get("/delete/{key}", func(ctx iris.Context) {
+			// delete a specific key
+			key := ctx.Params().Get("key")
+			c, err := redis.Dial("tcp", "localhost:6379")
+			errCheck(err)
+			defer c.Close()
+
+			_, err = c.Do("DEL", key)
+			errCheck(err)
+			// test if setted here
+			ctx.Writef("The '%s' on the /delete was deleted: ", key)
+		})
+
+		needAuth.Get("/clear", func(ctx iris.Context) {
+			// removes all entries
+			c, err := redis.Dial("tcp", "localhost:6379")
+			errCheck(err)
+			defer c.Close()
+			val, err := c.Do("FLUSHDB")
+
+			errCheck(err)
+			// test if setted here
+			ctx.Writef("all keys were deleted!  %v:", val)
+		})
+	}
 	return app
 }
 
@@ -101,9 +136,7 @@ func main() {
 
 	app := newApp()
 	//app.StaticWeb("/public", "./public")
-	//app.StaticEmbedded("/static", "./assets", Asset, AssetNames)
-
-	app.Run(iris.Addr(":8080"))
+	app.Run(iris.Addr(":80"))
 }
 
 func errCheck(err error) {

@@ -7,7 +7,6 @@
     <package value="iris_net_backend" />
     <directory value="$PROJECT_DIR$/" />
     <output_directory value="$PROJECT_DIR$" />
-    <option name="run" value="false" />
     <method v="2" />
   </configuration>
 </component>
