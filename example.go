@@ -39,6 +39,7 @@ func newApp() *iris.Application {
 			c, err := redis.Dial("tcp", "localhost:6379")
 			errCheck(err)
 			defer c.Close()
+
 			val, err := redis.String(c.Do("get", "time"))
 			errCheck(err)
 			ctx.Writef(string(val))
@@ -47,6 +48,7 @@ func newApp() *iris.Application {
 			c, err := redis.Dial("tcp", "localhost:6379")
 			errCheck(err)
 			defer c.Close()
+
 			var eq_slice []string
 			var eq_map map[string]map[string]string
 			eq_map = make(map[string]map[string]string)
