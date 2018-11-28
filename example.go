@@ -119,17 +119,17 @@ func newApp() *iris.Application {
 			ctx.Writef("The '%s' on the /delete was deleted: ", key)
 		})
 
-		needAuth.Get("/clear", func(ctx iris.Context) {
-			// removes all entries
-			c, err := redis.Dial("tcp", "localhost:6379")
-			errCheck(err)
-			defer c.Close()
-			val, err := c.Do("FLUSHDB")
-
-			errCheck(err)
-			// test if setted here
-			ctx.Writef("all keys were deleted!  %v:", val)
-		})
+		//needAuth.Get("/clear", func(ctx iris.Context) {
+		//	// removes all entries
+		//	c, err := redis.Dial("tcp", "localhost:6379")
+		//	errCheck(err)
+		//	defer c.Close()
+		//	val, err := c.Do("FLUSHDB")
+		//
+		//	errCheck(err)
+		//	// test if setted here
+		//	ctx.Writef("all keys were deleted!  %v:", val)
+		//})
 	}
 	return app
 }
@@ -138,7 +138,7 @@ func main() {
 
 	app := newApp()
 	//app.StaticWeb("/public", "./public")
-	app.Run(iris.Addr(":80"))
+	app.Run(iris.Addr(":8080"))
 }
 
 func errCheck(err error) {
