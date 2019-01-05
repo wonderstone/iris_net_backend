@@ -7,16 +7,37 @@
     <script src="/public/jquery-3.3.1.min.js"></script>
     <script src="/public/Table.js"></script>
     <script src="/public/moment.js"></script>
+    <script src="/public/plotly-finance.js"></script>
 </head>
 
 <body onload="startTime()">
-    <h1 style="text-align:center">培养箱温/湿度监控</h1>
+    <h1 style="text-align:center">库房温/湿度监控</h1>
     <div style="text-align:right" id="lastupdate"></div>
     <div style="text-align:right" id="rightnow"></div>
     <div id="table" style="margin:0 auto;text-align:center"></div>
+
+
     <script>
         setInterval(ajax_Proc, 5000);
         $(document).ready(ajax_Proc);
     </script>
+
+
+
+
+
+        <div id="chart1" style="margin: 0 auto;"></div>
+        <script>
+            setInterval(chart_ProcT('chart1'), 60000);
+            $(document).ready(chart_ProcT('chart1'));
+        </script>
+        <div id="chart2" style="margin: 0 auto;"></div>
+        <script>
+            setInterval(chart_ProcH('chart2'), 60000);
+            $(document).ready(chart_ProcH('chart2'));
+        </script>
+
+
+
 </body>
 </html>

@@ -1,3 +1,4 @@
+// import * as Plotly from "./plotly-finance";
 
 function startTime(){
     var today = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -17,11 +18,15 @@ function startTime(){
     });
 
 
-    t=setTimeout(function(){startTime()},500);
+    let t = setTimeout(function () {
+        startTime()
+    }, 500);
 }
 
 function ajax_Proc(){
     // $("#what").html("我是一个傻子吧");
+
+    //
     $.get("/admin/data",function(data,status){
         let obj = JSON.parse(data);
         var cols = ['Equipment'];
@@ -29,7 +34,7 @@ function ajax_Proc(){
         for(var item in obj){
             // console.log('item',item);
             for (var col in obj[item]){
-                console.log('col',col);
+                // console.log('col',col);
                 if (!cols.includes(col)){
                     cols.push(col)
                 }
@@ -75,4 +80,130 @@ function ajax_Proc(){
 
 
 
+function chart_ProcT(name){
+    return function() {
+        $.get("/admin/tsdata", function (dt, status) {
+                let obj = JSON.parse(dt), TESTER;
+                //console.log(obj['E02']['RTS'])
+                // var rightnow = moment().format('YYYY-MM-DD HH:mm:ss');
+                // console.log(rightnow)
+
+                TESTER = document.getElementById(name);
+
+                let data = [
+                    {
+                        type: "scatter",
+                        mode: "lines",
+                        name: 'E02Temp',
+                        x: obj['E02']['RTS'],
+                        y: obj['E02']['ATS']
+                    },
+                    {
+                        type: "scatter",
+                        mode: "lines",
+                        name: 'E03Temp',
+                        x: obj['E03']['RTS'],
+                        y: obj['E03']['ATS']
+                    },
+
+                ];
+                let layout = {
+                    title: '温度时序数据',
+                    xaxis: {
+                        autorange: true,
+                        // range: ['2015-02-17', '2017-02-16'],
+                        rangeselector: {
+                            buttons: [
+                                {
+                                    count: 1,
+                                    label: '1d',
+                                    step: 'day',
+                                    stepmode: 'backward'
+                                },
+                                {
+                                    count: 7,
+                                    label: '7d',
+                                    step: 'day',
+                                    stepmode: 'backward'
+                                },
+                                {step: 'all'}
+                            ]
+                        },
+                        rangeslider: {},
+                        type: 'date'
+                    },
+                    yaxis: {
+                        autorange: true,
+                        type: 'linear'
+                    }
+                };
+                Plotly.react(TESTER, data, layout);
+            }
+        );
+    }
+}
+
+
+function chart_ProcH(name){
+    return function() {
+
+        $.get("/admin/tsdata", function (dt, status) {
+                let obj = JSON.parse(dt), TESTER;
+                //console.log(obj['E02']['RTS'])
+                // var rightnow = moment().format('YYYY-MM-DD HH:mm:ss');
+                // console.log(rightnow)
+
+                TESTER = document.getElementById(name);
+
+                let data = [
+                    {
+                        type: "scatter",
+                        mode: "lines",
+                        name: 'E02Humi',
+                        x: obj['E02']['RTS'],
+                        y: obj['E02']['AHS']
+                    },
+                    {
+                        type: "scatter",
+                        mode: "lines",
+                        name: 'E03Humi',
+                        x: obj['E03']['RTS'],
+                        y: obj['E03']['AHS']
+                    },
+
+                ];
+                let layout = {
+                    title: '湿度时序数据',
+                    xaxis: {
+                        autorange: true,
+                        rangeselector: {
+                            buttons: [
+                                {
+                                    count: 1,
+                                    label: '1d',
+                                    step: 'day',
+                                    stepmode: 'backward'
+                                },
+                                {
+                                    count: 7,
+                                    label: '7d',
+                                    step: 'day',
+                                    stepmode: 'backward'
+                                },
+                                {step: 'all'}
+                            ]
+                        },
+                        rangeslider: {},
+                        type: 'date'
+                    },
+                    yaxis: {
+                        autorange: true,
+                        type: 'linear'
+                    }
+                };
+                Plotly.react(TESTER, data, layout);
+            }
+        );
+    }
+}
 
